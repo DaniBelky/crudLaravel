@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pedido;
+use App\Models\Produtos; // Importando a model Produtos
 use Illuminate\Http\Request;
 
 class PedidoController extends Controller
 {
-    // Listar todos pedidos
+    // Listar todos os pedidos
     public function index()
     {
         $pedidos = Pedido::all();
@@ -17,7 +18,8 @@ class PedidoController extends Controller
     // Mostrar formulário para criar pedido
     public function create()
     {
-        return view('pedidos.create');
+        $produtos = Produtos::all(); // Para popular o select no formulário
+        return view('pedidos.create', compact('produtos'));
     }
 
     // Salvar pedido novo
@@ -25,11 +27,20 @@ class PedidoController extends Controller
     {
         $request->validate([
             'cliente' => 'required|string|max:255',
-            'produto' => 'required|string|max:50',
-            'total' => 'required|numeric',
+            'produto' => 'required|integer', // Agora produto é o ID
+            'quantidade' => 'required|integer|min:1',
         ]);
 
-        Pedido::create($request->all());
+        // Buscar o produto e calcular o total
+        $produto = Produtos::findOrFail($request->produto);
+        $total = $produto->preco * $request->quantidade;
+
+        Pedido::create([
+            'cliente' => $request->cliente,
+            'produto' => $request->produto,  // Salvando o ID do produto
+            'quantidade' => $request->quantidade,
+            'total' => $total,
+        ]);
 
         return redirect()->route('pedidos.index')->with('success', 'Pedido criado com sucesso!');
     }
@@ -37,7 +48,8 @@ class PedidoController extends Controller
     // Mostrar formulário para editar pedido
     public function edit(Pedido $pedido)
     {
-        return view('pedidos.edit', compact('pedido'));
+        $produtos = Produtos::all(); // Para popular o select na edição também
+        return view('pedidos.edit', compact('pedido', 'produtos'));
     }
 
     // Atualizar pedido
@@ -45,11 +57,19 @@ class PedidoController extends Controller
     {
         $request->validate([
             'cliente' => 'required|string|max:255',
-            'produto' => 'required|string|max:50',
-            'total' => 'required|numeric',
+            'produto' => 'required|integer',
+            'quantidade' => 'required|integer|min:1',
         ]);
 
-        $pedido->update($request->all());
+        $produto = Produtos::findOrFail($request->produto);
+        $total = $produto->preco * $request->quantidade;
+
+        $pedido->update([
+            'cliente' => $request->cliente,
+            'produto' => $request->produto,
+            'quantidade' => $request->quantidade,
+            'total' => $total,
+        ]);
 
         return redirect()->route('pedidos.index')->with('success', 'Pedido atualizado com sucesso!');
     }

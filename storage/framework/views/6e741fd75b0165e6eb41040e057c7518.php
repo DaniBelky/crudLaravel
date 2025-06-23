@@ -88,16 +88,16 @@
     <div class="container">
         <h1>Login</h1>
 
-        @if ($errors->any())
+        <?php if($errors->any()): ?>
             <div style="color:red;">
-                @foreach ($errors->all() as $error)
-                    <p>{{ $error }}</p>
-                @endforeach
+                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <p><?php echo e($error); ?></p>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
-        @endif
+        <?php endif; ?>
 
-        <form method="POST" action="{{ route('login') }}">
-            @csrf
+        <form method="POST" action="<?php echo e(route('login')); ?>">
+            <?php echo csrf_field(); ?>
             <div class="input-group">
                 <input type="email" class="email" name="email" placeholder="Email"><br><br>
             </div>
@@ -110,4 +110,4 @@
     </div>
 </body>
 
-</html>
+</html><?php /**PATH C:\Users\marco\OneDrive\Área de Trabalho\projetoDePHP\projetoPHP\resources\views/login.blade.php ENDPATH**/ ?>

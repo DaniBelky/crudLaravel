@@ -213,4 +213,4 @@ body {
 
 </body>
 </html>
-<?php /**PATH C:\Users\marco\projetoDePHP\projetoPHP\resources\views/Index.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\Users\marco\projetoDePHP\projetoPHP\resources\views/cadastro.blade.php ENDPATH**/ ?>

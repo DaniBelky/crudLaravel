@@ -15,15 +15,16 @@
 
 <div class="container mt-4">
 
-    @if (session('success'))
+    <?php if(session('success')): ?>
         <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
+            <?php echo e(session('success')); ?>
 
-    {{-- Formulário de Cadastro --}}
-    <form action="{{ route('pedidos.store') }}" method="POST">
-        @csrf
+        </div>
+    <?php endif; ?>
+
+    
+    <form action="<?php echo e(route('pedidos.store')); ?>" method="POST">
+        <?php echo csrf_field(); ?>
         <div class="form-row">
             <div class="col">
                 <input type="text" name="cliente" class="form-control" placeholder="Nome do Cliente" required>
@@ -31,9 +32,9 @@
             <div class="col">
                 <select name="produto" class="form-control" required>
                     <option value="">Selecione um Produto</option>
-                    @foreach(App\Models\Produtos::all() as $produto)
-                        <option value="{{ $produto->id }}">{{ $produto->nome }} (R$ {{ number_format($produto->preco, 2, ',', '.') }})</option>
-                    @endforeach
+                    <?php $__currentLoopData = App\Models\Produtos::all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $produto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($produto->id); ?>"><?php echo e($produto->nome); ?> (R$ <?php echo e(number_format($produto->preco, 2, ',', '.')); ?>)</option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </select>
             </div>
             <div class="col">
@@ -47,7 +48,7 @@
 
     <hr>
 
-    {{-- Tabela de Pedidos --}}
+    
     <table class="table table-bordered mt-3">
         <thead>
             <tr>
@@ -60,56 +61,57 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($pedidos as $pedido)
+            <?php $__currentLoopData = $pedidos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pedido): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <tr>
-                    <td>{{ $pedido->id }}</td>
-                    <td>{{ $pedido->cliente }}</td>
+                    <td><?php echo e($pedido->id); ?></td>
+                    <td><?php echo e($pedido->cliente); ?></td>
                     <td>
-                        @php
+                        <?php
                             $produto = App\Models\Produtos::find($pedido->produto);
-                        @endphp
-                        {{ $produto ? $produto->nome : 'Produto não encontrado' }}
+                        ?>
+                        <?php echo e($produto ? $produto->nome : 'Produto não encontrado'); ?>
+
                     </td>
-                    <td>{{ $pedido->quantidade }}</td>
-                    <td>R$ {{ number_format($pedido->total, 2, ',', '.') }}</td>
+                    <td><?php echo e($pedido->quantidade); ?></td>
+                    <td>R$ <?php echo e(number_format($pedido->total, 2, ',', '.')); ?></td>
                     <td>
                         <!-- Botão Editar (abre modal) -->
-                        <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editarModal{{ $pedido->id }}">
+                        <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editarModal<?php echo e($pedido->id); ?>">
                             Editar
                         </button>
 
                         <!-- Form de Excluir -->
-                        <form action="{{ route('pedidos.destroy', $pedido->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
+                        <form action="<?php echo e(route('pedidos.destroy', $pedido->id)); ?>" method="POST" style="display:inline;">
+                            <?php echo csrf_field(); ?>
+                            <?php echo method_field('DELETE'); ?>
                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Confirma exclusão?')">Excluir</button>
                         </form>
                     </td>
                 </tr>
 
                 <!-- Modal Editar -->
-                <div class="modal fade" id="editarModal{{ $pedido->id }}" tabindex="-1" role="dialog" aria-labelledby="editarModalLabel{{ $pedido->id }}" aria-hidden="true">
+                <div class="modal fade" id="editarModal<?php echo e($pedido->id); ?>" tabindex="-1" role="dialog" aria-labelledby="editarModalLabel<?php echo e($pedido->id); ?>" aria-hidden="true">
                     <div class="modal-dialog" role="document">
-                        <form action="{{ route('pedidos.update', $pedido->id) }}" method="POST">
-                            @csrf
-                            @method('PUT')
+                        <form action="<?php echo e(route('pedidos.update', $pedido->id)); ?>" method="POST">
+                            <?php echo csrf_field(); ?>
+                            <?php echo method_field('PUT'); ?>
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="editarModalLabel{{ $pedido->id }}">Editar Pedido</h5>
+                                    <h5 class="modal-title" id="editarModalLabel<?php echo e($pedido->id); ?>">Editar Pedido</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <input type="text" name="cliente" value="{{ $pedido->cliente }}" class="form-control mb-2" required>
+                                    <input type="text" name="cliente" value="<?php echo e($pedido->cliente); ?>" class="form-control mb-2" required>
                                     <select name="produto" class="form-control mb-2" required>
-                                        @foreach(App\Models\Produtos::all() as $produtoItem)
-                                            <option value="{{ $produtoItem->id }}" {{ $pedido->produto == $produtoItem->id ? 'selected' : '' }}>
-                                                {{ $produtoItem->nome }} (R$ {{ number_format($produtoItem->preco, 2, ',', '.') }})
+                                        <?php $__currentLoopData = App\Models\Produtos::all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $produtoItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($produtoItem->id); ?>" <?php echo e($pedido->produto == $produtoItem->id ? 'selected' : ''); ?>>
+                                                <?php echo e($produtoItem->nome); ?> (R$ <?php echo e(number_format($produtoItem->preco, 2, ',', '.')); ?>)
                                             </option>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
-                                    <input type="number" name="quantidade" value="{{ $pedido->quantidade }}" class="form-control mb-2" min="1" required>
+                                    <input type="number" name="quantidade" value="<?php echo e($pedido->quantidade); ?>" class="form-control mb-2" min="1" required>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="submit" class="btn btn-primary">Salvar</button>
@@ -120,7 +122,7 @@
                     </div>
                 </div>
 
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </tbody>
     </table>
 
@@ -131,3 +133,4 @@
 
 </body>
 </html>
+<?php /**PATH C:\Users\marco\OneDrive\Área de Trabalho\projetoDePHP\projetoPHP\resources\views/pedido.blade.php ENDPATH**/ ?>

@@ -17,7 +17,7 @@ use App\Http\Controllers\PedidoController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('login');
 });
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
