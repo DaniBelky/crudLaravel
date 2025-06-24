@@ -17,12 +17,11 @@ use App\Http\Controllers\PedidoController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('login');
 });
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
-Route::get('/dashboard', [AuthController::class, 'dashboard'])->middleware('auth');
 
 
 
@@ -35,13 +34,12 @@ Route::delete('/usuarios/{id}', [UserController::class, 'destroy'])->name('usuar
 
 Route::get('/produtos', [ProdutoController::class, 'index'])->name('produtos.index');
 Route::post('/produtos', [ProdutoController::class, 'store'])->name('produtos.store');
-Route::put('/produtos/{id}', [ProdutoController::class, 'update'])->name('produtos.update');
+Route::put('/produtos/{produto}', [ProdutoController::class, 'update'])->name('produtos.update');
 Route::get('/produtos/cadastro', [ProdutoController::class, 'create'])->name('produtos.create');
 Route::delete('/produtos/{id}', [ProdutoController::class, 'destroy'])->name('produtos.destroy');
 
 
-
-Route::get('/pedido', [PedidoController::class, 'index'])->name('pedidos.index');
+Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index');
 Route::post('/pedidos', [PedidoController::class, 'store'])->name('pedidos.store');
 Route::get('/pedidos/{pedido}/edit', [PedidoController::class, 'edit'])->name('pedidos.edit');
 Route::put('/pedidos/{pedido}', [PedidoController::class, 'update'])->name('pedidos.update');

@@ -15,13 +15,14 @@
 
 <div class="container mt-4">
 
-    @if (session('success'))
+    <?php if(session('success')): ?>
         <div class="alert alert-success">
-            {{ session('success') }}
+            <?php echo e(session('success')); ?>
+
         </div>
-    @endif
-    <form action="{{ route('produtos.store') }}" method="POST">
-        @csrf
+    <?php endif; ?>
+    <form action="<?php echo e(route('produtos.store')); ?>" method="POST">
+        <?php echo csrf_field(); ?>
         <div class="form-row">
             <div class="col">
                 <input type="text" name="nome" class="form-control" placeholder="Nome do Produto" required>
@@ -54,41 +55,41 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($produtos as $produto)
+            <?php $__currentLoopData = $produtos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $produto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <tr>
-                    <td>{{ $produto->id }}</td>
-                    <td>{{ $produto->nome }}</td>
-                    <td>{{ $produto->descricao }}</td>
-                    <td>{{ $produto->quantidade_estoque }}</td>
-                    <td>R$ {{ number_format($produto->preco, 2, ',', '.') }}</td>
+                    <td><?php echo e($produto->id); ?></td>
+                    <td><?php echo e($produto->nome); ?></td>
+                    <td><?php echo e($produto->descricao); ?></td>
+                    <td><?php echo e($produto->quantidade_estoque); ?></td>
+                    <td>R$ <?php echo e(number_format($produto->preco, 2, ',', '.')); ?></td>
                     <td>
-                        <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editarModal{{ $produto->id }}">
+                        <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editarModal<?php echo e($produto->id); ?>">
                             Editar
                         </button>
 
-                        <form action="{{ route('produtos.destroy', $produto->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
+                        <form action="<?php echo e(route('produtos.destroy', $produto->id)); ?>" method="POST" style="display:inline;">
+                            <?php echo csrf_field(); ?>
+                            <?php echo method_field('DELETE'); ?>
                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Confirma exclusão?')">Excluir</button>
                         </form>
                     </td>
                 </tr>
 
-                <div class="modal fade" id="editarModal{{ $produto->id }}" tabindex="-1" role="dialog">
+                <div class="modal fade" id="editarModal<?php echo e($produto->id); ?>" tabindex="-1" role="dialog">
                     <div class="modal-dialog" role="document">
-                        <form action="{{ route('produtos.update', $produto->id) }}" method="POST">
-                            @csrf
-                            @method('PUT')
+                        <form action="<?php echo e(route('produtos.update', $produto->id)); ?>" method="POST">
+                            <?php echo csrf_field(); ?>
+                            <?php echo method_field('PUT'); ?>
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title">Editar Produto</h5>
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                                 </div>
                                 <div class="modal-body">
-                                    <input type="text" name="nome" value="{{ $produto->nome }}" class="form-control mb-2" required>
-                                    <input type="text" name="descricao" value="{{ $produto->descricao }}" class="form-control mb-2">
-                                    <input type="number" name="quantidade_estoque" value="{{ $produto->quantidade_estoque }}" class="form-control mb-2" required>
-                                    <input type="number" name="preco" value="{{ $produto->preco }}" step="0.01" class="form-control mb-2" required>
+                                    <input type="text" name="nome" value="<?php echo e($produto->nome); ?>" class="form-control mb-2" required>
+                                    <input type="text" name="descricao" value="<?php echo e($produto->descricao); ?>" class="form-control mb-2">
+                                    <input type="number" name="quantidade_estoque" value="<?php echo e($produto->quantidade_estoque); ?>" class="form-control mb-2" required>
+                                    <input type="number" name="preco" value="<?php echo e($produto->preco); ?>" step="0.01" class="form-control mb-2" required>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="submit" class="btn btn-primary">Salvar</button>
@@ -99,7 +100,7 @@
                     </div>
                 </div>
 
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </tbody>
     </table>
 
@@ -110,3 +111,4 @@
 
 </body>
 </html>
+<?php /**PATH C:\Users\belch\Downloads\projetoDePHP\projetoPHP\resources\views/produto.blade.php ENDPATH**/ ?>

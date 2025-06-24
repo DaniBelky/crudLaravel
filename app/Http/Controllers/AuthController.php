@@ -24,7 +24,7 @@ class AuthController extends Controller
 
         if ($user && $request->senha === $user->senha) {
             Auth::login($user);
-            return redirect('/dashboard');
+            return redirect('/pedido');
         } else {
             return back()->withErrors(['email' => 'E-mail ou senha inválidos']);
         }
@@ -32,6 +32,6 @@ class AuthController extends Controller
 
     public function dashboard()
     {
-        return view('dashboard');
+        return view('pedido');
     }
 }

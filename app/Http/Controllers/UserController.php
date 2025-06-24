@@ -11,7 +11,7 @@ class UserController extends Controller
     public function index()
     {
         $usuarios = Usuario::all();
-        return view('Index', compact('usuarios'));
+        return view('cadastro', compact('usuarios'));
     }
 
     // Criar novo usuário

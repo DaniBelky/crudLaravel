@@ -10,7 +10,7 @@ use Illuminate\Database\Schema\Blueprint;
 class Usuario extends Authenticatable
 {
     use HasFactory;
-    protected $table = 'cadastrousers';
+    protected $table = 'cadastro';
      protected $fillable = ['email', 'senha'];
     
 }

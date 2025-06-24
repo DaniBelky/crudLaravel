@@ -21,21 +21,44 @@
         </div>
     @endif
 
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     {{-- Formulário de Cadastro --}}
     <form action="{{ route('pedidos.store') }}" method="POST">
         @csrf
-        <div class="form-row">
-            <div class="col">
-                <input type="text" name="cliente" class="form-control" placeholder="Nome do Cliente" required>
+        <div class="form-row align-items-end">
+            <div class="col-md-4 mb-2">
+                <label for="nome_cliente">Nome do Cliente</label>
+                <input type="text" name="nome_cliente" id="nome_cliente" class="form-control" placeholder="Nome do Cliente" value="{{ old('nome_cliente') }}" required>
             </div>
-            <div class="col">
-                <input type="text" name="produto" class="form-control" placeholder="Nome do Produto" required>
+
+            <div class="col-md-4 mb-2">
+                <label for="produto_id">Produto</label>
+                <select name="produto_id" id="produto_id" class="form-control" required>
+                    <option value="" disabled selected>Selecione um produto</option>
+                    @foreach ($produtos as $produto)
+                        <option value="{{ $produto->id }}" {{ old('produto_id') == $produto->id ? 'selected' : '' }}>
+                            {{ $produto->nome }} (Estoque: {{ $produto->quantidade_estoque }})
+                        </option>
+                    @endforeach
+                </select>
             </div>
-            <div class="col">
-                <input type="number" name="total" step="0.01" class="form-control" placeholder="Quatidade de Produtos" required>
+
+            <div class="col-md-2 mb-2">
+                <label for="quantidade">Quantidade</label>
+                <input type="number" name="quantidade" id="quantidade" class="form-control" placeholder="Quantidade" value="{{ old('quantidade') }}" min="1" required>
             </div>
-            <div class="col">
-                <button type="submit" class="btn btn-primary">Cadastrar</button>
+
+            <div class="col-md-2 mb-2">
+                <button type="submit" class="btn btn-primary btn-block">Cadastrar</button>
             </div>
         </div>
     </form>
@@ -49,7 +72,8 @@
                 <th>ID</th>
                 <th>Cliente</th>
                 <th>Produto</th>
-                <th>Total</th>
+                <th>Quantidade</th>
+                <th>Preço Total</th> {{-- NOVA COLUNA --}}
                 <th>Ações</th>
             </tr>
         </thead>
@@ -57,9 +81,10 @@
             @foreach ($pedidos as $pedido)
                 <tr>
                     <td>{{ $pedido->id }}</td>
-                    <td>{{ $pedido->cliente }}</td>
-                    <td>{{ $pedido->produto }}</td>
-                    <td>R$ {{ number_format($pedido->total, 2, ',', '.') }}</td>
+                    <td>{{ $pedido->nome_cliente }}</td>
+                    <td>{{ $pedido->produto->nome ?? 'Produto não encontrado' }}</td>
+                    <td>{{ $pedido->quantidade }}</td>
+                    <td>R$ {{ number_format($pedido->preco_total, 2, ',', '.') }}</td> {{-- PREÇO TOTAL --}}
                     <td>
                         <!-- Botão Editar (abre modal) -->
                         <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editarModal{{ $pedido->id }}">
@@ -89,9 +114,26 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <input type="text" name="cliente" value="{{ $pedido->cliente }}" class="form-control mb-2" required>
-                                    <input type="text" name="status" value="{{ $pedido->produto }}" class="form-control mb-2" required>
-                                    <input type="number" name="total" value="{{ $pedido->total }}" step="0.01" class="form-control mb-2" required>
+                                    <div class="form-group">
+                                        <label for="nome_cliente_{{ $pedido->id }}">Nome do Cliente</label>
+                                        <input type="text" name="nome_cliente" id="nome_cliente_{{ $pedido->id }}" value="{{ old('nome_cliente', $pedido->nome_cliente) }}" class="form-control" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="produto_id_{{ $pedido->id }}">Produto</label>
+                                        <select name="produto_id" id="produto_id_{{ $pedido->id }}" class="form-control" required>
+                                            @foreach ($produtos as $produto)
+                                                <option value="{{ $produto->id }}" {{ (old('produto_id', $pedido->produto_id) == $produto->id) ? 'selected' : '' }}>
+                                                    {{ $produto->nome }} (Estoque: {{ $produto->quantidade_estoque }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="quantidade_{{ $pedido->id }}">Quantidade</label>
+                                        <input type="number" name="quantidade" id="quantidade_{{ $pedido->id }}" value="{{ old('quantidade', $pedido->quantidade) }}" min="1" class="form-control" required>
+                                    </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="submit" class="btn btn-primary">Salvar</button>
