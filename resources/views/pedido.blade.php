@@ -31,7 +31,6 @@
         </div>
     @endif
 
-    {{-- Formulário de Cadastro --}}
     <form action="{{ route('pedidos.store') }}" method="POST">
         @csrf
         <div class="form-row align-items-end">
@@ -55,6 +54,16 @@
             <div class="col-md-2 mb-2">
                 <label for="quantidade">Quantidade</label>
                 <input type="number" name="quantidade" id="quantidade" class="form-control" placeholder="Quantidade" value="{{ old('quantidade') }}" min="1" required>
+            <div class="col">
+                <select name="produto" class="form-control" required>
+                    <option value="">Selecione um Produto</option>
+                    @foreach(App\Models\Produtos::all() as $produto)
+                        <option value="{{ $produto->id }}">{{ $produto->nome }} (R$ {{ number_format($produto->preco, 2, ',', '.') }})</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col">
+                <input type="number" name="quantidade" class="form-control" placeholder="Quantidade" min="1" required>
             </div>
 
             <div class="col-md-2 mb-2">
@@ -65,7 +74,6 @@
 
     <hr>
 
-    {{-- Tabela de Pedidos --}}
     <table class="table table-bordered mt-3">
         <thead>
             <tr>
@@ -73,7 +81,8 @@
                 <th>Cliente</th>
                 <th>Produto</th>
                 <th>Quantidade</th>
-                <th>Preço Total</th> {{-- NOVA COLUNA --}}
+                <th>Preço Total</th> 
+                <th>Total</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -84,14 +93,21 @@
                     <td>{{ $pedido->nome_cliente }}</td>
                     <td>{{ $pedido->produto->nome ?? 'Produto não encontrado' }}</td>
                     <td>{{ $pedido->quantidade }}</td>
-                    <td>R$ {{ number_format($pedido->preco_total, 2, ',', '.') }}</td> {{-- PREÇO TOTAL --}}
+                    <td>R$ {{ number_format($pedido->preco_total, 2, ',', '.') }}</td> 
+                    <td>{{ $pedido->cliente }}</td>
                     <td>
-                        <!-- Botão Editar (abre modal) -->
+                        @php
+                            $produto = App\Models\Produtos::find($pedido->produto);
+                        @endphp
+                        {{ $produto ? $produto->nome : 'Produto não encontrado' }}
+                    </td>
+                    <td>{{ $pedido->quantidade }}</td>
+                    <td>R$ {{ number_format($pedido->total, 2, ',', '.') }}</td>
+                    <td>
                         <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editarModal{{ $pedido->id }}">
                             Editar
                         </button>
 
-                        <!-- Form de Excluir -->
                         <form action="{{ route('pedidos.destroy', $pedido->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
@@ -100,7 +116,6 @@
                     </td>
                 </tr>
 
-                <!-- Modal Editar -->
                 <div class="modal fade" id="editarModal{{ $pedido->id }}" tabindex="-1" role="dialog" aria-labelledby="editarModalLabel{{ $pedido->id }}" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <form action="{{ route('pedidos.update', $pedido->id) }}" method="POST">
@@ -134,6 +149,15 @@
                                         <label for="quantidade_{{ $pedido->id }}">Quantidade</label>
                                         <input type="number" name="quantidade" id="quantidade_{{ $pedido->id }}" value="{{ old('quantidade', $pedido->quantidade) }}" min="1" class="form-control" required>
                                     </div>
+                                    <input type="text" name="cliente" value="{{ $pedido->cliente }}" class="form-control mb-2" required>
+                                    <select name="produto" class="form-control mb-2" required>
+                                        @foreach(App\Models\Produtos::all() as $produtoItem)
+                                            <option value="{{ $produtoItem->id }}" {{ $pedido->produto == $produtoItem->id ? 'selected' : '' }}>
+                                                {{ $produtoItem->nome }} (R$ {{ number_format($produtoItem->preco, 2, ',', '.') }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <input type="number" name="quantidade" value="{{ $pedido->quantidade }}" class="form-control mb-2" min="1" required>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="submit" class="btn btn-primary">Salvar</button>
